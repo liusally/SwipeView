@@ -87,6 +87,7 @@ typedef NS_ENUM(NSUInteger, SwipeViewAlignment)
 @property (nonatomic, assign, getter = isVertical) BOOL vertical;
 
 - (void)reloadData;
+- (void)reloadDataWithoutRefreshing;
 - (void)reloadItemAtIndex:(NSInteger)index;
 - (void)scrollByOffset:(CGFloat)offset duration:(NSTimeInterval)duration;
 - (void)scrollToOffset:(CGFloat)offset duration:(NSTimeInterval)duration;

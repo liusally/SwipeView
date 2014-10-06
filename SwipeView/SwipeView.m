@@ -1011,6 +1011,22 @@
     }
 }
 
+- (void)reloadDataWithoutRefreshing
+{
+    //get number of items
+    [self updateItemSizeAndCount];
+    
+    //layout views
+    [self setNeedsLayout];
+    
+    //fix scroll offset
+    if (_numberOfItems > 0 && _scrollOffset < 0.0f)
+    {
+        self.scrollOffset = 0;
+    }
+}
+
+
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     UIView *view = [super hitTest:point withEvent:event];
