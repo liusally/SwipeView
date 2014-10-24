@@ -1158,6 +1158,12 @@
         //stop scrolling animation
         _scrolling = NO;
         
+        if (_scrollView.contentOffset.x < 0) {
+            _pullingRefresh = true;
+        } else if (_scrollView.contentOffset.x > 0) {
+            _pullingRefresh = false;
+        }
+        
         //update scrollOffset
         CGFloat delta = _vertical? (_scrollView.contentOffset.y - _previousContentOffset.y): (_scrollView.contentOffset.x - _previousContentOffset.x);
         _previousContentOffset = _scrollView.contentOffset;
