@@ -82,6 +82,8 @@
 @property (nonatomic, assign) CGFloat endOffset;
 @property (nonatomic, assign) CGFloat lastUpdateOffset;
 @property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, strong) UIActivityIndicatorView *activityView;
+@property (nonatomic, assign) BOOL isPullingRefresh;
 
 @end
 
@@ -554,6 +556,15 @@
 
 - (void)layOutItemViews
 {
+    //:Sally
+    //    for (UIView *view in self.visibleItemViews)
+    //    {
+    //        [self setFrameForView:view atIndex:[self indexOfItemView:view]];
+    //    }
+}
+
+//:Sally
+- (void)layoutFrames {
     for (UIView *view in self.visibleItemViews)
     {
         [self setFrameForView:view atIndex:[self indexOfItemView:view]];
@@ -565,6 +576,13 @@
     [self updateScrollOffset];
     [self loadUnloadViews];
     [self layOutItemViews];
+    
+    //:Sally for reset pull to refresh
+    if (self.isPullingRefresh) {
+        [self layoutFrames];
+        self.isPullingRefresh = NO;
+    }
+    
 }
 
 - (void)layoutSubviews
@@ -575,7 +593,7 @@
     [self updateLayout];
     if (_pagingEnabled && !_scrolling)
     {
-        [self scrollToItemAtIndex:self.currentItemIndex duration:0.25];
+        [self scrollToItemAtIndex:self.currentItemIndex duration: 0.25];
     }
 }
 
@@ -727,6 +745,7 @@
         BOOL animationEnabled = [UIView areAnimationsEnabled];
         if (animationEnabled) [UIView setAnimationsEnabled:NO];
         _suppressScrollEvent = YES;
+        
         _scrollView.contentOffset = contentOffset;
         _suppressScrollEvent = NO;
         if (animationEnabled) [UIView setAnimationsEnabled:YES];
@@ -988,6 +1007,7 @@
 
 - (void)reloadData
 {
+    
     //remove old views
     for (UIView *view in self.visibleItemViews)
     {
@@ -1000,7 +1020,7 @@
     
     //get number of items
     [self updateItemSizeAndCount];
-
+    
     //layout views
     [self setNeedsLayout];
     
@@ -1016,6 +1036,7 @@
     //get number of items
     [self updateItemSizeAndCount];
     
+    self.isPullingRefresh = YES;
     //layout views
     [self setNeedsLayout];
     
@@ -1158,10 +1179,20 @@
         //stop scrolling animation
         _scrolling = NO;
         
-        if (_scrollView.contentOffset.x < 0) {
+        //variable for offset
+        CGFloat pullOffset = -70;
+        if (_scrollView.contentOffset.x < pullOffset) {
+            
+            
+            //            [scrollView setContentOffset:CGPointMake(pullOffset, 0) animated: NO];
+            [scrollView setContentInset:UIEdgeInsetsMake(0, -pullOffset, 0, 0)];
+            CGRect frame = CGRectMake(0, 0, -pullOffset, self.frame.size.height);
+            [self showActivity: frame];
             _pullingRefresh = true;
-        } else if (_scrollView.contentOffset.x > 0) {
+            
+        } else if (_scrollView.contentOffset.x > pullOffset) {
             _pullingRefresh = false;
+            [self stopActivity];
         }
         
         //update scrollOffset
@@ -1176,6 +1207,23 @@
     {
         _previousContentOffset = _scrollView.contentOffset;
     }
+}
+
+- (void)showActivity: (CGRect) rect {
+    if (!self.activityView) {
+        self.activityView = [[UIActivityIndicatorView alloc] init];
+        self.activityView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+        [self insertSubview:self.activityView atIndex:0];
+    }
+    self.activityView.frame = rect;
+    self.activityView.center = CGPointMake(rect.size.width/2, rect.size.height/2);
+    self.activityView.hidden = NO;
+    [self.activityView startAnimating];
+}
+
+-(void) stopActivity {
+    [self.activityView stopAnimating];
+    self.activityView.hidden = YES;
 }
 
 - (void)scrollViewWillBeginDragging:(__unused UIScrollView *)scrollView
@@ -1195,6 +1243,7 @@
         _lastUpdateOffset = self.scrollOffset - 1.0f;
         [self didScroll];
     }
+    
     [_delegate swipeViewDidEndDragging:self willDecelerate:decelerate];
 }
 
