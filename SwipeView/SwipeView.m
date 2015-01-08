@@ -1180,20 +1180,20 @@
         _scrolling = NO;
         
         //variable for offset
-        CGFloat pullOffset = -70;
-        if (_scrollView.contentOffset.x < pullOffset) {
-            
-            
-            //            [scrollView setContentOffset:CGPointMake(pullOffset, 0) animated: NO];
-            [scrollView setContentInset:UIEdgeInsetsMake(0, -pullOffset, 0, 0)];
-            CGRect frame = CGRectMake(0, 0, -pullOffset, self.frame.size.height);
-            [self showActivity: frame];
-            _pullingRefresh = true;
-            
-        } else if (_scrollView.contentOffset.x > pullOffset) {
-            _pullingRefresh = false;
-            [self stopActivity];
-        }
+//        CGFloat pullOffset = -70;
+//        if (_scrollView.contentOffset.x < pullOffset) {
+//            
+//            
+//            //            [scrollView setContentOffset:CGPointMake(pullOffset, 0) animated: NO];
+//            [scrollView setContentInset:UIEdgeInsetsMake(0, -pullOffset, 0, 0)];
+//            CGRect frame = CGRectMake(0, 0, -pullOffset, self.frame.size.height);
+//            [self showActivity: frame];
+//            _pullingRefresh = true;
+//            
+//        } else if (_scrollView.contentOffset.x > pullOffset) {
+//            _pullingRefresh = false;
+//            [self stopActivity];
+//        }
         
         //update scrollOffset
         CGFloat delta = _vertical? (_scrollView.contentOffset.y - _previousContentOffset.y): (_scrollView.contentOffset.x - _previousContentOffset.x);
